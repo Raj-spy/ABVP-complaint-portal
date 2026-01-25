@@ -19,15 +19,13 @@ import Messages from "./pages/Messages.jsx";
 export default function App() {
   const location = useLocation();
 
-  // Hide navbar on landing page only
-  const hideNavbar = location.pathname === "/";
+  // Navbar hidden on auth & landing pages
+  const hideNavbar = ["/", "/login", "/signup"].includes(location.pathname);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar visible on all pages except Landing */}
       {!hideNavbar && <Navbar />}
 
-      {/* Main content */}
       <main className={!hideNavbar ? "pt-4" : ""}>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -41,7 +39,6 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/messages" element={<Messages />} />
-
         </Routes>
       </main>
     </div>
