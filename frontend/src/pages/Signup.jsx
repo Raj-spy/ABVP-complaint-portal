@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 export default function Signup() {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,6 @@ export default function Signup() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
           email,
           password,
         }),
@@ -34,7 +32,6 @@ export default function Signup() {
         throw new Error(data.message || "Signup failed");
       }
 
-      // Optional: store token if returned
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
@@ -47,7 +44,7 @@ export default function Signup() {
     }
   }
 
-  // Inject animation keyframes once
+  // Animation
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
@@ -79,20 +76,7 @@ export default function Signup() {
 
         {/* BASIC INFO */}
         <div style={styles.section}>
-          <span style={styles.sectionLabel}>Basic information</span>
-
-          <div style={styles.field}>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={e => setName(e.target.value)}
-              style={styles.input}
-              onFocus={floatLabel}
-              onBlur={resetLabel}
-            />
-            <label style={styles.label}>Full name</label>
-          </div>
+          <span style={styles.sectionLabel}>Account details</span>
 
           <div style={styles.field}>
             <input
@@ -133,7 +117,7 @@ export default function Signup() {
         <div style={styles.infoBox}>
           <h4 style={styles.infoTitle}>Your privacy matters</h4>
           <p style={styles.infoText}>
-            Your information is used only for account security and identity.
+            Your information is used only for account security.
             We never sell data, track behavior, or run ads.
           </p>
         </div>
@@ -165,7 +149,7 @@ export default function Signup() {
   );
 }
 
-/* 🔹 FLOAT LABEL HELPERS */
+/* FLOAT LABEL HELPERS */
 function floatLabel(e) {
   e.target.nextSibling.style.top = "-6px";
 }
@@ -188,7 +172,7 @@ function hoverDown(e) {
   e.target.style.boxShadow = "none";
 }
 
-/* 🎨 INLINE STYLES */
+/* STYLES */
 const styles = {
   page: {
     minHeight: "100vh",
