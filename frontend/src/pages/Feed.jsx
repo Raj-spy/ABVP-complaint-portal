@@ -1,138 +1,340 @@
-import PageContainer from "../components/layout/PageContainer";
-import FeedControls from "../components/feed/FeedControls";
-import PrivacyBadge from "../components/feed/PrivacyBadge";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useFeedStore } from "../context/FeedContext";
 
-const posts = [
+ const POSTS = [
   {
     id: 1,
-    user: "rahul_dev",
-    avatar: "https://i.pravatar.cc/150?img=3",
-    type: "image",
-    media: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
-    caption: "Learning React properly > chasing frameworks 🚀",
-    community: "Web Development",
-    privacy: "Community",
+    initials: "MC",
+    name: "Maya Chen",
+    handle: "@mayachen",
+    text: "Just finished a 2-hour deep work session without any notifications. The silence was productive.",
+    tag: "Productivity",
+    time: "2h ago",
+    likes: 127,
+    comments: 23,
+    media: [],
   },
   {
     id: 2,
-    user: "mental.space",
-    avatar: "https://i.pravatar.cc/150?img=5",
-    type: "video",
-    media: "https://www.w3schools.com/html/mov_bbb.mp4",
-    caption: "Reminder: it’s okay to slow down 🌱",
-    community: "Mental Health",
-    privacy: "Public",
+    initials: "AR",
+    name: "Alex Rivera",
+    handle: "@alexr",
+    text: "Spent the morning offline. Here’s what calm looks like.",
+    tag: "Mindfulness",
+    time: "3h ago",
+    likes: 89,
+    comments: 12,
+    media: [
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+      },
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+      },
+    ],
   },
   {
     id: 3,
-    user: "design.daily",
-    avatar: "https://i.pravatar.cc/150?img=8",
-    type: "image",
-    media: "https://images.unsplash.com/photo-1558655146-d09347e92766",
-    caption: "Good UI is invisible. Bad UI is unforgettable.",
-    community: "UI/UX",
-    privacy: "Public",
+    initials: "JP",
+    name: "Jordan Park",
+    handle: "@jordanp",
+    text: "A short clip from my no-phone evening walk.",
+    tag: "Creativity",
+    time: "4h ago",
+    likes: 245,
+    comments: 45,
+    media: [
+      {
+        type: "video",
+        url: "https://www.w3schools.com/html/mov_bbb.mp4",
+      },
+    ],
   },
   {
     id: 4,
-    user: "student.hub",
-    avatar: "https://i.pravatar.cc/150?img=11",
-    type: "image",
-    media: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
-    caption: "Consistency > motivation. Keep going 📚",
-    community: "Students",
-    privacy: "Community",
+    initials: "NK",
+    name: "Neha Kapoor",
+    handle: "@nehak",
+    text: "Today’s desk. No notifications, just one task.",
+    tag: "Deep Work",
+    time: "5h ago",
+    likes: 312,
+    comments: 38,
+    media: [
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+      },
+    ],
   },
   {
     id: 5,
-    user: "fit.mind",
-    avatar: "https://i.pravatar.cc/150?img=12",
-    type: "image",
-    media: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    caption: "Morning walks clear more than just your head ☀️",
-    community: "Wellness",
-    privacy: "Public",
+    initials: "RS",
+    name: "Rohan Shah",
+    handle: "@rohans",
+    text: "Replaced scrolling with a long walk. Brain feels lighter.",
+    tag: "Wellbeing",
+    time: "6h ago",
+    likes: 198,
+    comments: 19,
+    media: [],
   },
   {
     id: 6,
-    user: "code.bytes",
-    avatar: "https://i.pravatar.cc/150?img=15",
-    type: "image",
-    media: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-    caption: "Debugging is where real learning happens 💻",
-    community: "Web Development",
-    privacy: "Community",
+    initials: "AM",
+    name: "Aditi Mehra",
+    handle: "@aditimehra",
+    text: "Captured this while journaling in silence.",
+    tag: "Reflection",
+    time: "7h ago",
+    likes: 154,
+    comments: 14,
+    media: [
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1492724441997-5dc865305da7",
+      },
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d",
+      },
+    ],
+  },
+  {
+    id: 7,
+    initials: "DV",
+    name: "Dev Verma",
+    handle: "@devv",
+    text: "Trying a 24-hour no social experiment. Logging thoughts instead.",
+    tag: "Digital Detox",
+    time: "8h ago",
+    likes: 401,
+    comments: 62,
+    media: [],
+  },
+  {
+    id: 8,
+    initials: "LS",
+    name: "Lina Stone",
+    handle: "@linas",
+    text: "A quiet moment from today. Nothing to explain.",
+    tag: "Stillness",
+    time: "9h ago",
+    likes: 267,
+    comments: 21,
+    media: [
+      {
+        type: "image",
+        url: "https://images.unsplash.com/photo-1502082553048-f009c37129b9",
+      },
+    ],
+  },
+  {
+    id: 9,
+    initials: "TK",
+    name: "Tanishq Kumar",
+    handle: "@tanishqk",
+    text: "This is the only video I recorded today. One take, no edits.",
+    tag: "Minimal Video",
+    time: "10h ago",
+    likes: 178,
+    comments: 17,
+    media: [
+      {
+        type: "video",
+        url: "https://www.w3schools.com/html/movie.mp4",
+      },
+    ],
+  },
+  {
+    id: 10,
+    initials: "SP",
+    name: "Sara Patel",
+    handle: "@sarap",
+    text: "Evenings without screens feel longer. In a good way.",
+    tag: "Life",
+    time: "11h ago",
+    likes: 522,
+    comments: 74,
+    media: [],
   },
 ];
 
-export default function Feed() {
+
+ export default function Feed() {
+  const navigate = useNavigate();
+  const { posts } = useFeedStore(); // 🔥 context se new posts
+  const allPosts = [...posts, ...POSTS];
+
+  const [openComment, setOpenComment] = useState(null);
+  const [comment, setComment] = useState("");
+
   return (
-    <PageContainer>
-      {/* Explainable Feed Controls */}
-      <FeedControls />
-
-      {/* Long Feed */}
-      <div className="space-y-10 max-w-md mx-auto">
-        {posts.map(post => (
-          <div
-            key={post.id}
-            className="bg-white border rounded-xl overflow-hidden shadow-sm"
-          >
-            {/* Header */}
-            <div className="flex items-center gap-3 p-4">
-              <img
-                src={post.avatar}
-                alt=""
-                className="w-10 h-10 rounded-full"
-              />
-              <div className="flex-1">
-                <p className="text-sm font-semibold">{post.user}</p>
-                <p className="text-xs text-gray-500">
-                  {post.community}
-                </p>
-              </div>
-              <PrivacyBadge type={post.privacy} />
-            </div>
-
-            {/* Media */}
-            {post.type === "image" && (
-              <img
-                src={post.media}
-                alt=""
-                className="w-full max-h-[450px] object-cover"
-              />
-            )}
-
-            {post.type === "video" && (
-              <video
-                src={post.media}
-                controls
-                className="w-full max-h-[450px] object-cover"
-              />
-            )}
-
-            {/* Actions */}
-            <div className="flex gap-4 px-4 pt-3 text-xl text-gray-600">
-              ❤️ 💬 🔖
-            </div>
-
-            {/* Caption */}
-            <div className="px-4 py-3">
-              <p className="text-sm">
-                <span className="font-semibold mr-1">
-                  {post.user}
-                </span>
-                {post.caption}
-              </p>
-
-              <p className="text-xs text-gray-500 mt-2">
-                You’re seeing this because you follow{" "}
-                <b>{post.community}</b>
-              </p>
-            </div>
+    <div className="min-h-screen flex bg-white text-black">
+      {/* LEFT SIDEBAR */}
+      <aside className="w-64 border-r-2 border-black p-4 flex flex-col justify-between">
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-xl font-bold uppercase">Pause</h1>
+            <p className="text-xs uppercase tracking-widest">Public Mode</p>
           </div>
-        ))}
-      </div>
-    </PageContainer>
+
+          <div className="space-y-3 text-sm uppercase tracking-wider">
+            <p className="font-bold">Trending</p>
+            <p>Interests</p>
+            <p>Friends</p>
+             <p
+  className="cursor-pointer hover:underline"
+  onClick={() => navigate("/messages")}
+>
+  Messages
+</p>
+
+          </div>
+
+          <div>
+            <p className="text-xs uppercase mb-1">Daily Budget</p>
+            <div className="border-2 border-black h-2 w-full" />
+            <p className="text-xs mt-1">10 / 10 reels</p>
+          </div>
+        </div>
+
+        <div className="border-2 border-black p-3 text-center text-sm">
+          GO PREMIUM <br /> ₹30 / month
+        </div>
+      </aside>
+
+      {/* MAIN FEED */}
+      <main className="flex-1 p-6">
+        <h2 className="text-lg font-bold uppercase tracking-widest mb-6">
+          Trending
+        </h2>
+
+        <div className="space-y-6 max-w-3xl">
+          {allPosts.map((post) => (
+            <div key={post.id} className="border-2 border-black p-4">
+              {/* HEADER */}
+              <div className="flex gap-4">
+                <div className="w-10 h-10 border-2 border-black flex items-center justify-center font-bold">
+                  {post.initials}
+                </div>
+
+                <div className="flex-1">
+                  <p className="font-bold">
+                    {post.name}{" "}
+                    <span className="font-normal text-sm">
+                      {post.handle}
+                    </span>
+                  </p>
+
+                  <p className="mt-1">{post.text}</p>
+
+                  <div className="flex gap-3 mt-2 text-xs uppercase">
+                    {/* TAG → COMMUNITIES REDIRECT */}
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/communities?interest=${encodeURIComponent(
+                            post.tag
+                          )}`
+                        )
+                      }
+                      className="border-2 border-black px-2 py-0.5 hover:bg-black hover:text-white transition-colors"
+                    >
+                      {post.tag}
+                    </button>
+                    <span>{post.time}</span>
+                  </div>
+                </div>
+              </div>
+
+               {post.media.length > 0 && (
+  <div className="mt-4 flex justify-center">
+    <div className="w-full sm:max-w-[520px] border-2 border-black bg-white">
+      {post.media.map((m, i) =>
+        m.type === "image" ? (
+          <img
+            key={i}
+            src={m.url}
+            alt=""
+            className="
+              w-full
+              h-auto
+              max-h-[70vh]
+              object-contain
+              bg-white
+            "
+          />
+        ) : (
+          <video
+            key={i}
+            src={m.url}
+            controls
+            className="
+              w-full
+              h-auto
+              max-h-[70vh]
+              object-contain
+              bg-white
+            "
+          />
+        )
+      )}
+    </div>
+  </div>
+)}
+
+
+              {/* ACTIONS */}
+              <div className="flex justify-between items-center mt-4 text-sm">
+                <div className="flex gap-4">
+                  <span>♡ {post.likes}</span>
+                  <span>💬 {post.comments}</span>
+                </div>
+
+                <button
+                  className="border-2 border-black px-4 py-1 uppercase"
+                  onClick={() =>
+                    setOpenComment(
+                      openComment === post.id ? null : post.id
+                    )
+                  }
+                >
+                  Watch
+                </button>
+              </div>
+
+              {/* COMMENT FORM */}
+              {openComment === post.id && (
+                <div className="mt-4 border-t-2 border-black pt-3">
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Write a thoughtful comment…"
+                    className="w-full border-2 border-black p-2 text-sm"
+                  />
+                  <button
+                    className="mt-2 border-2 border-black px-4 py-1 text-sm uppercase"
+                    onClick={() => {
+                      setComment("");
+                      setOpenComment(null);
+                    }}
+                  >
+                    Post Comment
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center text-xs mt-10 uppercase">
+          10 more reels available today
+        </p>
+      </main>
+    </div>
   );
 }
